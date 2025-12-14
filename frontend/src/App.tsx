@@ -164,51 +164,109 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Pharma LBL FAQ Generator & Q&A Tool</h1>
+        <div className="header-content">
+          <div className="logo-icon">💊</div>
+          <h1>Pharma Label FAQ Generator</h1>
+          <p className="subtitle">AI-Powered Q&A Tool for Pharmaceutical Labels</p>
+        </div>
       </header>
 
       <main className="app-main">
         {/* Section A: Upload Label */}
-        <section className="section">
-          <h2>Section A: Upload Label</h2>
-          <div className="upload-section">
-            <input
-              type="file"
-              accept=".pdf"
-              onChange={handleFileUpload}
-              disabled={isUploading}
-              className="file-input"
-            />
-            {isUploading && <p className="status">Uploading...</p>}
-            {uploadStatus && <p className="status success">{uploadStatus}</p>}
-            {uploadError && <p className="error">{uploadError}</p>}
+        <section className="section upload-section-card">
+          <div className="section-header">
+            <div className="section-icon">📄</div>
+            <h2>Upload Label</h2>
+          </div>
+          <div className="upload-area">
+            <label className="file-input-label">
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileUpload}
+                disabled={isUploading}
+                className="file-input"
+              />
+              <div className="file-input-content">
+                {isUploading ? (
+                  <>
+                    <div className="spinner"></div>
+                    <span>Uploading PDF...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="upload-icon">📤</span>
+                    <span>Click to upload or drag and drop</span>
+                    <span className="file-hint">PDF files only</span>
+                  </>
+                )}
+              </div>
+            </label>
+            {uploadStatus && (
+              <div className="status-badge success">
+                <span className="status-icon">✓</span>
+                {uploadStatus}
+              </div>
+            )}
+            {uploadError && (
+              <div className="error-badge">
+                <span className="error-icon">⚠</span>
+                {uploadError}
+              </div>
+            )}
             {labelId && (
-              <p className="label-id">Label ID: <code>{labelId}</code></p>
+              <div className="label-id-badge">
+                <span className="badge-label">Label ID:</span>
+                <code>{labelId}</code>
+              </div>
             )}
           </div>
         </section>
 
         {/* Section B: Auto-generated FAQs */}
-        <section className="section">
-          <h2>Section B: Auto-generated FAQs</h2>
+        <section className="section faq-section-card">
+          <div className="section-header">
+            <div className="section-icon">❓</div>
+            <h2>Auto-Generated FAQs</h2>
+          </div>
           <div className="faq-section">
             <button
               onClick={handleGenerateFAQs}
               disabled={!labelId || isGeneratingFAQs || (faqButtonDisabledUntil !== null && Date.now() < faqButtonDisabledUntil)}
-              className="button primary"
+              className="button primary generate-btn"
             >
-              {isGeneratingFAQs ? 'Generating FAQs...' : 
-               (faqButtonDisabledUntil !== null && Date.now() < faqButtonDisabledUntil) 
-                 ? `Please wait ${Math.ceil((faqButtonDisabledUntil - Date.now()) / 1000)}s...` 
-                 : 'Generate FAQs'}
+              {isGeneratingFAQs ? (
+                <>
+                  <span className="spinner-small"></span>
+                  <span>Generating FAQs...</span>
+                </>
+              ) : (faqButtonDisabledUntil !== null && Date.now() < faqButtonDisabledUntil) ? (
+                <>
+                  <span className="timer-icon">⏱</span>
+                  <span>Please wait {Math.ceil((faqButtonDisabledUntil - Date.now()) / 1000)}s...</span>
+                </>
+              ) : (
+                <>
+                  <span className="button-icon">✨</span>
+                  <span>Generate FAQs</span>
+                </>
+              )}
             </button>
-            {faqError && <p className="error">{faqError}</p>}
+            {faqError && (
+              <div className="error-badge">
+                <span className="error-icon">⚠</span>
+                {faqError}
+              </div>
+            )}
             {faqs.length > 0 && (
               <div className="faq-list">
                 {faqs.map((faq, index) => (
                   <div key={index} className="faq-item">
-                    <h3 className="faq-question">{faq.question}</h3>
-                    <div className="faq-answer">{faq.answer}</div>
+                    <div className="faq-number">{index + 1}</div>
+                    <div className="faq-content">
+                      <h3 className="faq-question">{faq.question}</h3>
+                      <div className="faq-answer">{faq.answer}</div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -217,35 +275,59 @@ function App() {
         </section>
 
         {/* Section C: Ask a Question */}
-        <section className="section">
-          <h2>Section C: Ask a Question</h2>
+        <section className="section ask-section-card">
+          <div className="section-header">
+            <div className="section-icon">💬</div>
+            <h2>Ask a Question</h2>
+          </div>
           <div className="ask-section">
             <div className="input-group">
-              <input
-                type="text"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Enter your question about the label..."
-                className="question-input"
-                disabled={!labelId || isAsking}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !isAsking) {
-                    handleAsk()
-                  }
-                }}
-              />
+              <div className="input-wrapper">
+                <span className="input-icon">🔍</span>
+                <input
+                  type="text"
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="Enter your question about the label..."
+                  className="question-input"
+                  disabled={!labelId || isAsking}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !isAsking) {
+                      handleAsk()
+                    }
+                  }}
+                />
+              </div>
               <button
                 onClick={handleAsk}
                 disabled={!labelId || !question.trim() || isAsking}
-                className="button primary"
+                className="button primary ask-btn"
               >
-                {isAsking ? 'Asking...' : 'Ask'}
+                {isAsking ? (
+                  <>
+                    <span className="spinner-small"></span>
+                    <span>Asking...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="button-icon">🚀</span>
+                    <span>Ask</span>
+                  </>
+                )}
               </button>
             </div>
-            {askError && <p className="error">{askError}</p>}
+            {askError && (
+              <div className="error-badge">
+                <span className="error-icon">⚠</span>
+                {askError}
+              </div>
+            )}
             {answer && (
               <div className="answer-box">
-                <h3>Answer:</h3>
+                <div className="answer-header">
+                  <span className="answer-icon">💡</span>
+                  <h3>Answer</h3>
+                </div>
                 <div className="answer-text">{answer}</div>
               </div>
             )}
